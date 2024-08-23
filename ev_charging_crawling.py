@@ -33,6 +33,27 @@ def crawl_ev_charging():
         '제주특별자치도': '제주'
     }
 
+    # 도시 코드 매핑 딕셔너리
+    code_mapping = {
+        '서울': 1,
+        '부산': 2,
+        '대구': 3,
+        '인천': 4,
+        '광주': 5,
+        '대전': 6,
+        '울산': 7,
+        '세종': 8,
+        '경기': 9,
+        '강원': 10,
+        '충북': 11,
+        '충남': 12,
+        '전북': 13,
+        '전남': 14,
+        '경북': 15,
+        '경남': 16,
+        '제주': 17
+    }
+
     # 첫 번째 페이지부터 시작
     page = 1
     per_page = 100
@@ -60,6 +81,7 @@ def crawl_ev_charging():
                 # 도시 이름 변환
                 original_city = record['시도']
                 mapped_city = city_mapping.get(original_city, original_city)
+                mapped_code = code_mapping.get(mapped_city, mapped_city)
 
                 # 데이터 삽입 전 중복 검사
                 with engine.connect() as conn:
@@ -77,6 +99,17 @@ def crawl_ev_charging():
                         })
                         conn.commit()
                         print(f"Inserted: {record['충전소명']}")
+
+                        insert_query = text("""
+                            INSERT INTO city_table (city_code, city_name) 
+                            VALUES (:city_code, :city_name)
+                        """)
+                        conn.execute(insert_query, {
+                            'city_code': mapped_code,
+                            'city_name': mapped_city
+                        })
+                        conn.commit()
+                        print(f"Inserted: {mapped_city} {mapped_code}")
 
             print(f"Page {page} loaded and processed.")
 
