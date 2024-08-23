@@ -16,3 +16,20 @@ def connect_to_postgres():
     except Exception as e:
         print(f"Unable to connect to the database: {e}")
         return None
+    
+def delete_table():
+    tables = ['situation_table', 'city_table', 'news_table', 'faq_table']
+
+    conn = connect_to_postgres()
+    if conn:
+        for table in tables:
+            try:
+                cur = conn.cursor()
+                cur.execute(f"DELETE FROM {table};")
+                conn.commit() # CREATE
+                print(f"Successfully delete values from {table}")
+                pass
+            except Exception as e:
+                print(f"Cannot delete values from {table}: {e}")
+                pass
+    conn.close()
