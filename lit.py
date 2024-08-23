@@ -3,6 +3,9 @@ import psycopg2
 import pandas as pd
 from sqlalchemy import create_engine
 import matplotlib.pyplot as plt
+from matplotlib import font_manager, rc
+import numpy as np
+import platform
 
 def connect_to_postgres():
     try:
@@ -68,29 +71,61 @@ def st_situation():
 
 
 def st_charger():
+    # 한글 폰트 설정
+    if platform.system() == 'Windows':
+        font_path = 'C:/Windows/Fonts/malgun.ttf'  # Windows에서 사용하는 한글 폰트 경로
+        font_name = font_manager.FontProperties(fname=font_path).get_name()
+        rc('font', family=font_name)
+    elif platform.system() == 'Darwin':  # macOS
+        rc('font', family='AppleGothic')
+    else:  # Linux (예: Ubuntu)
+        rc('font', family='NanumGothic')
+
+    plt.rcParams['axes.unicode_minus'] = False  # 한글 폰트 사용 시 마이너스(-) 기호 깨짐 방지
+
     # PostgreSQL 연결 설정
     engine = create_engine('postgresql+psycopg2://postgres:12341234@postgresdb.cf6o4ug4a4vh.ap-northeast-2.rds.amazonaws.com:5432/skai1stpj')
 
     # 데이터 로드
-    query = "SELECT charger_city, COUNT(*) as count FROM charger_info GROUP BY charger_city ORDER BY count DESC;"
+    query = "SELECT charger_city AS 도시, COUNT(*) as 충전소수 FROM charger_info GROUP BY charger_city ORDER BY 충전소수 DESC;"
     df = pd.read_sql(query, engine)
 
     # 인덱스를 1부터 시작하도록 설정
     df.index = df.index + 1
 
     # Streamlit 앱 작성
-    st.title('전기차 충전소 현황')
-
-    # 시도별 데이터 요약 테이블 (COUNT 순으로 정렬)
-    st.write("### 시도별 충전소 수 (충전소 개수 순으로 정렬)")
-    st.table(df)
+    st.title('도시별 충전소 보급 현황')
 
     # 시도별 데이터 막대 그래프 (COUNT 순으로 정렬)
-    # = df.sort_values(by='count', ascending=False)  # COUNT 기준으로 정렬
-    #st.bar_chart(df_sorted.set_index('charger_city'))  # 정렬된 데이터프레임을 사용하여 막대 그래프 생성
-    # 시도별 데이터 막대 그래프 (COUNT 순으로 정렬)
-    df_sorted = df.set_index('charger_city').sort_values('count', ascending=False)
-    st.bar_chart(df_sorted)
+    df_sorted = df.set_index('도시').sort_values('충전소수', ascending=False)
+
+    # 색상 설정: 상위 7개 도시는 지정된 색상, 나머지는 회색 계열 (흰색 제외)
+    top_colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF']  # 빨, 주, 노, 초, 파, 남, 보
+    gray_grad = [plt.cm.Greys(i / (len(df_sorted) - 7 + 1)) for i in range(1, len(df_sorted) - 7 + 1)]  # 흰색 제외
+
+    # 모든 도시의 색상 리스트 생성
+    colors = top_colors + gray_grad
+
+    # matplotlib을 사용하여 그래프 생성
+    fig, ax = plt.subplots()
+    bars = ax.bar(df_sorted.index, df_sorted['충전소수'], color=colors)
+    ax.set_xlabel('도시')
+    ax.set_ylabel('충전소 수')
+    ax.set_title('광역시/도별 전기차 충전소 설치 현황')
+
+    # 레이블 위치 조정 (간격 조정)
+    ax.set_xticks(range(len(df_sorted.index)))
+    ax.set_xticklabels(df_sorted.index, rotation=0, ha='center', fontsize=10)
+
+    # 막대와 레이블 사이 간격 조정
+    ax.margins(y=0.1)  # y축(막대와 레이블) 간의 간격을 조정
+
+    st.pyplot(fig)
+
+    # 테이블을 Expander로 감싸서 fold 기능 제공
+    with st.expander("시도별 충전소 수 (내림차순으로 정렬)"):
+        st.write("### 시도별 충전소 수 (내림차순으로 정렬)")
+        st.table(df)
 
 
 def st_news():
