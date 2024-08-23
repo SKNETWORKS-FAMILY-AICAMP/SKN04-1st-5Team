@@ -121,7 +121,7 @@
 
 ## ERD
 
-![ERD.png](./image/erd.png)
+![ERD.png](./image/ERD.png)
 
 ## 사전 요구사항
 
