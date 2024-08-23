@@ -9,11 +9,11 @@
 
 ## 👥팀원소개
 <p align="center">
-	<img src="./image/ljs.webp" width="180" height="180"/>
-	<img src="./image/swy.webp" width="180" height="180"/>
-	<img src="./image/juj.webp" width="180" height="180"/>
-	<img src="./image/psp.webp" width="180" height="180"/>
-	<img src="./image/kmj.webp" width="180" height="180"/>
+	<img src="./image/ljs.webp" width="150" height="150"/>
+	<img src="./image/swy.webp" width="150" height="150"/>
+	<img src="./image/juj.webp" width="150" height="150"/>
+	<img src="./image/psp.webp" width="150" height="150"/>
+	<img src="./image/kmj.webp" width="150" height="150"/>
 </p>
 <div align="center">
 	
