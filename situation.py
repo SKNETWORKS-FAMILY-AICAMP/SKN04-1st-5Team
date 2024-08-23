@@ -43,18 +43,18 @@ def crawl_ev_situation():
     tr = bs4.select('table.datatable tbody tr')
     
     conn = connect_to_postgres()
-    # if conn != None:
-    #     for city in locations[1:-1]:
-    #         city_name = city
-    #         mapped_code = code_mapping.get(city_name, city_name)
+    if conn != None:
+        for city in locations[1:-1]:
+            city_name = city
+            mapped_code = code_mapping.get(city_name, city_name)
 
-    #         try:    
-    #             cur = conn.cursor()
-    #             cur.execute(f"INSERT INTO city_table (city_code, city_name) VALUES ('{mapped_code}', '{city}');")
-    #             conn.commit() # CREATE    
-    #         except Exception as e:
-    #             print(f"{mapped_code}', '{city}: {e}")
-    #             pass
+            try:    
+                cur = conn.cursor()
+                cur.execute(f"INSERT INTO city_table (city_code, city_name) VALUES ('{mapped_code}', '{city}');")
+                conn.commit() # CREATE    
+            except Exception as e:
+                print(f"{mapped_code}', '{city}: {e}")
+                pass
 
     if conn != None:
         for row in tr:
