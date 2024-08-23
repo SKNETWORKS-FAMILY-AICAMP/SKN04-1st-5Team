@@ -20,6 +20,6 @@ from lit import show_streamlit
 #crawl_ev_news()
 
 # 데이터베이스에서 데이터들을 불러와서 streamlit을 이용해 페이지 출력
-#show_streamlit()
+show_streamlit()
 
 
