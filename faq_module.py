@@ -69,6 +69,4 @@ def make_faq_data():
             (faq.get('faq_title'), faq.get('faq_content'))
         )
     # 변경사항 저장
-    conn.commit() 
-
-make_faq_data()
+    conn.commit()
